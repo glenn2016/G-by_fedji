@@ -5,15 +5,37 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
 
 
-
-class Authcontroller extends Controller
+class Authcontroller extends Controller     
 {
     //
+
+    public function store()
+    {
+        Auth::shouldUse('web');
+        if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
+
+            $user = User::find(Auth::user()->id);
+
+            $user_token['token'] = $user->createToken('appToken')->accessToken;
+
+            return response()->json([
+                'success' => true,
+                'token' => $user_token,
+                'user' => $user,
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to authenticate.',
+            ], 401);
+        }
+    }
+   
     function index (){
         $totalUser = User::all();
         return response()->json([
@@ -30,6 +52,7 @@ class Authcontroller extends Controller
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => 'required|string|min:8',
         ]);
+
         if ($validations->fails()) {
             $errors = $validations->errors();
             return response()->json([
@@ -37,6 +60,7 @@ class Authcontroller extends Controller
                 'status' => 401
             ]);
         }
+
         if ($validations->passes()) {
 
             $user = User::create([
@@ -48,59 +72,38 @@ class Authcontroller extends Controller
                 'password' => Hash::make($request->password),
             ]);
             $user->roles()->attach($request->role);
-            $token = $user->createToken('auth_token')->plainTextToken;
+
+            $token = $user->createToken('auth_token')->accessToken;
+
             return response()->json([
-                'token' => $token,
+                'token' => $token,      
                 'type' => 'Bearer'
             ]);
         }
     }
     
-    public function connexion(Request $request){
+    public function destroy(Request $request)
+    {
+        if (Auth::user()) {
+            $request->user()->token()->revoke();
 
-            // Authentification de l'utilisateur
-        if (!Auth::attempt($request->only('email', 'password'))) {
             return response()->json([
-                'msg' => 'Informations de connexion non reconnues',
-                'status' => 401
-            ]);
+                'success' => true,
+                'message' => 'Logged out successfully',
+            ], 200);
         }
-
-        // Récupérer l'utilisateur authentifié
-        $user = Auth::user();
-
-        // Vérifier si l'utilisateur a le rôle 'admin'
-        if ($user->hasRole('Admin')) {
-            $token = $user->createToken('auth_token')->plainTextToken;
-            return response()->json([
-                'token' => $token,
-                'type' => 'Bearer',
-                'status' => 200,
-                'role' => 'admin'
-                ])->cookie('jwt', $token);
-            }
-
-        // Vérifier si l'utilisateur a le rôle 'participant'
-        if ($user->hasRole('Participant')) {
-            $token = $user->createToken('auth_token')->plainTextToken;
-            return response()->json([
-                'token' => $token,
-                'type' => 'Bearer',
-                'status' => 200,
-                'role' => 'participant'
-            ])->cookie('jwt', $token);
-        }
-
-            // Si l'utilisateur n'a ni le rôle 'admin' ni le rôle 'participant'
-        return response()->json([
-           'msg' => 'L\'utilisateur n\'a pas de rôle défini',
-            'status' => 401
-        ]);
     }
 
     public function user()
     {
-        return response()->json(auth()->user());
+        if (Auth::check()) {
+            // L'utilisateur est authentifié, récupérer l'utilisateur
+            $user = auth()->user();
+            return response()->json($user);
+        } else {
+            // L'utilisateur n'est pas authentifié
+            return response()->json(['message' => 'Utilisateur non authentifié.'], 401);
+        }
     }
 
 }

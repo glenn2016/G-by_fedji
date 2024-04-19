@@ -20,6 +20,43 @@ use App\Http\Controllers\Api\Authcontroller;
 |
 */
 
+Route::post('/participant/create',[Authcontroller::class,'create']);
+
+
+
+
+Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
+    Route::post('login', [Authcontroller::class, 'store']);
+    Route::post('logout', [Authcontroller::class, 'destroy'])->middleware('auth:api');
+
+
+    Route::get('user',[Authcontroller::class,'user']);
+  });
+
+  
+/*
+Route::middleware(['auth', 'api'])->group(  function () {
+
+    Route::get('/user',[Authcontroller::class,'user']);
+    
+    //Entreprise
+    Route::get('/entreprises',[EntrepriseController::class,'index']);
+    Route::post('/entreprise/create',[EntrepriseController::class,'create']);
+    Route::get('/entreprise{id}',[EntrepriseController::class,'show']);
+});
+
+
+*/
+
+
+
+
+
+
+
+
+/*
+
 //Role
 Route::get('/roles',[RoleController::class,'index']);
 
@@ -49,7 +86,6 @@ Route::get('/evenement{id}',[EvenementController::class,'show']);
 //users
 Route::get('/users',[Authcontroller::class,'index']);
 Route::post('/participant/create',[Authcontroller::class,'create']);
-
 Route::post('/login',[Authcontroller::class,'connexion']);
 
 
@@ -71,4 +107,5 @@ Route::middleware(['auth', 'role:participant'])->group(function () {
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
+
 */
