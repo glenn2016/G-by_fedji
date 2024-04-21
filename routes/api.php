@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\EvenementController;
 use App\Http\Controllers\Api\Authcontroller;
 use App\Http\Controllers\Api\EvaluationController;
 use App\Http\Controllers\Api\FedddbackController;
+use App\Http\Controllers\Api\ContactesContoller;
 
 
 /*
@@ -54,10 +55,18 @@ Route::get('/evaluations',[EvaluationController::class,'index']);
 Route::get('/entreprises',[EntrepriseController::class,'index']);
 Route::get('/entreprise/{id}',[EntrepriseController::class,'show']);
 
+//Contacte
+Route::post('/contacte/create',[ContactesContoller::class,'create']);
+
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
     //ADmin_Authentifie
     Route::get('/user_admin',[Authcontroller::class,'user'])->middleware('auth:api');
+
+    //Contacte
+    Route::get('/contacte/{id}',[ContactesContoller::class,'show'])->middleware('auth:api');
+    Route::get('/contactes',[ContactesContoller::class,'index'])->middleware('auth:api');
+    Route::put('/contacte/{id}/soft-delete', [ContactesContoller::class, 'delete'])->middleware('auth:api');
 
     //Participant
     Route::post('/participant/create',[Authcontroller::class,'create'])->middleware('auth:api');
