@@ -56,4 +56,14 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Role::class);
     }
+    
+    public function evaluations()
+    {
+        return $this->hasMany(Evaluation::class);
+    }
+
+    public function fedddbacks()
+    {
+        return $this->hasMany(Feddback::class);
+    }
 }

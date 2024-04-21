@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -14,15 +15,16 @@ class Authcontroller extends Controller
 {
     //
 
-    public function store()
+    // Connexion d'un utilisateur
+    public function store(Request $request)
     {
         Auth::shouldUse('web');
-        if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
-
+        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+    
             $user = User::find(Auth::user()->id);
-
+    
             $user_token['token'] = $user->createToken('appToken')->accessToken;
-
+    
             return response()->json([
                 'success' => true,
                 'token' => $user_token,
@@ -31,28 +33,32 @@ class Authcontroller extends Controller
         } else {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to authenticate.',
+                'message' => 'Authentification non reussi',
             ], 401);
         }
     }
-   
+
+    //Listes de tout les utlisateurs participants
+    
     function index (){
-        $totalUser = User::all();
+        $usersWithRole = User::with('roles')->get();
+        $participants = $usersWithRole->filter(function ($user) {
+            return $user->hasRole('participant');
+        });
         return response()->json([
-            'User'=> $totalUser,
-            'status'=>200
+            'participants' => $participants,
+            'status' => 200
         ]);
     }
-
+    //Creation d'un participants
     public function create(Request $request){
-
         $validations = Validator::make($request->all(), [
             'nom' => ['required', 'string', 'max:255'],
             'prenom' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => 'required|string|min:8',
         ]);
-
+    
         if ($validations->fails()) {
             $errors = $validations->errors();
             return response()->json([
@@ -60,9 +66,8 @@ class Authcontroller extends Controller
                 'status' => 401
             ]);
         }
-
+    
         if ($validations->passes()) {
-
             $user = User::create([
                 'nom' => $request->nom,
                 'prenom' => $request->prenom,
@@ -71,10 +76,13 @@ class Authcontroller extends Controller
                 'entreprise_id' => $request->entreprise_id,
                 'password' => Hash::make($request->password),
             ]);
-            $user->roles()->attach($request->role);
-
+    
+            // Attache le rôle à l'utilisateur
+            $user->roles()->attach(2);
+    
+            // Crée un jeton d'authentification pour l'utilisateur
             $token = $user->createToken('auth_token')->accessToken;
-
+    
             return response()->json([
                 'token' => $token,      
                 'type' => 'Bearer'
@@ -82,6 +90,7 @@ class Authcontroller extends Controller
         }
     }
     
+    //Deconnexion d'un utlilisateur
     public function destroy(Request $request)
     {
         if (Auth::user()) {
@@ -93,17 +102,15 @@ class Authcontroller extends Controller
             ], 200);
         }
     }
-
+    //Recuperation de l'utilisateur Connecter
     public function user()
     {
-        if (Auth::check()) {
-            // L'utilisateur est authentifié, récupérer l'utilisateur
-            $user = auth()->user();
-            return response()->json($user);
-        } else {
-            // L'utilisateur n'est pas authentifié
-            return response()->json(['message' => 'Utilisateur non authentifié.'], 401);
-        }
-    }
+        $user = auth()->user();
 
+          return response()->json([
+            "status"=> true,
+            "message"=>"information user",
+            "data"=> $user
+          ]);
+    }
 }

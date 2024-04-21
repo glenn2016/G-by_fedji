@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
             $table->string('nom');
+            $table->integer('etat')->nullable()->default(1);
             $table->timestamps();
-        });
+        });x
     }
 
     /**

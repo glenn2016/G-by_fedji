@@ -14,4 +14,8 @@ class Evenement extends Model
         'date_debut',
         'date_fin',
     ];
+    public function fedddbacks()
+    {
+        return $this->hasMany(Feddback::class);
+    }
 }

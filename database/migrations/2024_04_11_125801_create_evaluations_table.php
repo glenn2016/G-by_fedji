@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('question_one');
             $table->string('question_deux');
             $table->string('question_trois');
+            $table->integer('etat')->nullable()->default(1);
             $table->timestamps();
         });
     }
