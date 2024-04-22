@@ -99,5 +99,4 @@ Route::middleware(['auth', 'role:participant'])->group(function () {
     Route::post('/evaluation/create',[EvaluationController::class,'create'])->middleware('auth:api');
     Route::put('/evaluation/update/{id}', [EvaluationController::class, 'update'])->middleware('auth:api');
     Route::put('/evaluations/{id}/soft-delete', [EvenementController::class, 'delete'])->middleware('auth:api');
-
 });

@@ -29,6 +29,7 @@ class Authcontroller extends Controller
                 'success' => true,
                 'token' => $user_token,
                 'user' => $user,
+                'status' => 200,
             ], 200);
         } else {
             return response()->json([
