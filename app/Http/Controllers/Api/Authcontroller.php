@@ -16,7 +16,7 @@ class Authcontroller extends Controller
     //
 
     // Connexion d'un utilisateur
-    public function store(Request $request)
+   public function store(Request $request)
     {
         Auth::shouldUse('web');
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
@@ -24,12 +24,15 @@ class Authcontroller extends Controller
             $user = User::find(Auth::user()->id);
     
             $user_token['token'] = $user->createToken('appToken')->accessToken;
-    
+
+            $user_roles = $user->roles()->pluck('nom');
+
             return response()->json([
                 'success' => true,
                 'token' => $user_token,
                 'user' => $user,
                 'status' => 200,
+                'roles' => $user_roles,
             ], 200);
         } else {
             return response()->json([
