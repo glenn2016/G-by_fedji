@@ -32,6 +32,7 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
 
   });
 
+
 //Participant
 Route::get('/users_participants',[Authcontroller::class,'index']);
 //Entreprise

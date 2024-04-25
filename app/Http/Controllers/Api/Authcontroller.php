@@ -70,7 +70,7 @@ class Authcontroller extends Controller
                 'status' => 401
             ]);
         }
-    
+
         if ($validations->passes()) {
             $user = User::create([
                 'nom' => $request->nom,

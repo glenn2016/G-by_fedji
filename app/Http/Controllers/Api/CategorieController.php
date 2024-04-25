@@ -13,13 +13,14 @@ class CategorieController extends Controller
     //
     function index()
     {
-        $categories = Categorie::where('etat', 1)->get();
-    
-        return response()->json([
-            'categories' => $categories,
-            'status' => 200
-        ]);
+            $categories = Categorie::where('etat', 1)->get();
+        
+            return response()->json([
+                'categories' => $categories,
+                'status' => 200
+            ]);
     }
+    
     public function create(Request $request){
         $validatedData = $request->validate([
             'nom' => ['required', 'string', 'max:255'],
@@ -41,24 +42,24 @@ class CategorieController extends Controller
         ]);
     }
 
-    public function update(Request $request, $id)
-    {
-        $validatedData = $request->validate([
-            'nom' => ['required', 'string', 'max:255'],
-        ]);
+        public function update(Request $request, $id)
+        {
+            $validatedData = $request->validate([
+                'nom' => ['required', 'string', 'max:255'],
+            ]);
 
-        $Categorie = Categorie::findOrFail($id);
+            $Categorie = Categorie::findOrFail($id);
 
-        $Categorie->nom = $validatedData['nom'];
-    
-        $Categorie->save();
+            $Categorie->nom = $validatedData['nom'];
+        
+            $Categorie->save();
 
-        return response()->json([
-            'message' => 'Categorie mise à jour avec succès',
-            'Categorie' => $Categorie,
-            'status'=>200
-        ]);
-    }
+            return response()->json([
+                'message' => 'Categorie mise à jour avec succès',
+                'Categorie' => $Categorie,
+                'status'=>200
+            ]);
+        }
 
 
     function delete($id)

@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
+    use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use App\Models\Feddback;
+use App\Models\Feddback;        
 use Illuminate\Support\Facades\Validator;
 
 
@@ -15,7 +15,7 @@ class FedddbackController extends Controller
 
     function index()
     {
-        $totalFeddbacks = Feddback::where('etat', 1)->get();
+        $totalFeddbacks = Feddback::all();
         return response()->json([
             'feedbacks' => $totalFeddbacks,
             'status' => 200
@@ -99,7 +99,7 @@ class FedddbackController extends Controller
             $feddback->save();
 
             return response()->json([
-                'message' => 'feddback soft deleted successfully',
+                'message' => 'f5eddback soft deleted successfully',
                 'status' => 200
             ]);
         } else {

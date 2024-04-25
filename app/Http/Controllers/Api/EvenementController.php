@@ -49,7 +49,7 @@ class EvenementController extends Controller
     public function update(Request $request, $id)
     {
         $validatedData = $request->validate([
-            'titre' => ['required', 'string', 'max:255'],
+            'titre' => ['requ   ired', 'string', 'max:255'],
             'description' => ['required', 'string', 'max:355'],
             'date_debut' => ['required', 'date'],
             'date_fin' => ['required', 'date'],
